@@ -45,9 +45,46 @@
                     <img id="user-profile-picture">
                     <h2 id="user-greeting"></h2>
                 </div>
-                <input id="display-name-input" type="text" placeholder="Display Name">
-                <input id="photo-url-input" type="text" placeholder="Profile Photo URL">
-                <button id="update-profile-btn" class="primary-btn">Update profile</button>
+
+                <div id="display-update" class="display-update-container">
+                  <h1>Would you like to update your name or image</h1>
+                  <input id="display-name-input" type="text" placeholder="Display Name">
+                  <input id="photo-url-input" type="text" placeholder="Profile Photo URL">
+                  <button id="update-profile-btn" class="primary-btn">Update profile</button>
+                </div>
+
+                <div class="mood-emojis">
+                  <button id="mood-1" class="mood-emoji-btn">
+                      <img src="assets/emojis/1.png">
+                      Awful
+                  </button>
+                  <button id="mood-2" class="mood-emoji-btn">
+                      <img src="assets/emojis/2.png">
+                      Bad
+                  </button>
+                  <button id="mood-3" class="mood-emoji-btn">
+                      <img src="assets/emojis/3.png">
+                      Meh
+                  </button>
+                  <button id="mood-4" class="mood-emoji-btn">
+                      <img src="assets/emojis/4.png">
+                      Good
+                  </button>
+                  <button id="mood-5" class="mood-emoji-btn">
+                      <img src="assets/emojis/5.png">
+                      Amazing
+                  </button>
+              </div>
+                
+                <div class="post-section">
+                  <textarea id="post-input" placeholder="Write down how you're feeling..."></textarea>
+                  <button id="post-btn" class="primary-btn">Post</button>
+                  <!-- <button id="fetch-posts-btn" class="secondary-btn">Fetch posts</button> -->
+                </div>
+
+                <div id="posts" class="posts-section">
+                </div>
+                
               </div>
             </div>
         </section>

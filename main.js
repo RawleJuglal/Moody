@@ -11,6 +11,14 @@ import { getAuth,
   signInWithPopup,
   updateProfile 
 } from "firebase/auth";
+import {  getFirestore,
+          collection, 
+          addDoc,
+          serverTimestamp,
+          getDocs,
+          onSnapshot,
+          QuerySnapshot
+} from "firebase/firestore";
 /* === Firebase Setup === */
 const firebaseConfig = {
   apiKey: "AIzaSyBEiqHhHs0u5auiqPFwuTBMZuZ45pIAo5Q",
@@ -23,6 +31,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 /* === UI === */
@@ -45,9 +54,19 @@ const signOutButtonEl = document.getElementById("sign-out-btn")
 const userProfilePictureEl = document.getElementById("user-profile-picture")
 const userGreetingEl = document.getElementById("user-greeting")
 
+const updateContainerEl = document.getElementById('display-update')
 const displayNameInputEl = document.getElementById("display-name-input")
 const photoURLInputEl = document.getElementById("photo-url-input")
 const updateProfileButtonEl = document.getElementById("update-profile-btn")
+
+const moodEmojiEls = document.getElementsByClassName("mood-emoji-btn")
+const textareaEl = document.getElementById("post-input")
+const postButtonEl = document.getElementById("post-btn")
+
+//Was used to fetch post once but removed with real time snapshot
+// const fetchPostsButtonEl = document.getElementById("fetch-posts-btn")
+
+const postsEl = document.getElementById("posts")
 
 /* == UI - Event Listeners == */
 
@@ -60,12 +79,36 @@ signOutButtonEl.addEventListener("click", authSignOut)
 
 updateProfileButtonEl.addEventListener("click", authUpdateProfile)
 
+for (let moodEmojiEl of moodEmojiEls) {
+  moodEmojiEl.addEventListener("click", selectMood)
+}
+
+postButtonEl.addEventListener("click", postButtonPressed)
+
+//Was used with the commented fetch post button before realtime update
+// fetchPostsButtonEl.addEventListener("click", fetchOnceAndRenderPostsFromDB)
+
+/* === State === */
+
+let moodState = 0
+
+/* === Global Constants === */
+
+const collectionName = "posts"
+
 /* === Main Code === */
 onAuthStateChanged(auth, (user) => {
   if (user) {
     showLoggedInView()
     showProfilePicture(userProfilePictureEl, user)
     showUserGreeting(userGreetingEl, user)
+    if(!user.photoURL){
+      showView(updateContainerEl)
+      
+    } else {
+      hideView(updateContainerEl)
+    }
+    fetchInRealtimeAndRenderPostsFromDB()
   } else {
     showLoggedOutView()
   }
@@ -117,9 +160,6 @@ function authSignInWithEmail() {
 function authCreateAccountWithEmail() {
   const email = emailInputEl.value;
   const password = passwordInputEl.value;
-
-  console.log(email)
-  console.log(password)
   createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
     sendEmailVerification(auth.currentUser)
@@ -162,7 +202,69 @@ function authUpdateProfile(){
   });
 }
 
+/* = Functions - Firebase - Firestore = */
+async function addPostToDB(postBody, user){
+  try {
+    const docRef = await addDoc(collection(db, collectionName), {
+      body:postBody,
+      uid:user.uid,
+      createdAt: serverTimestamp(),
+      mood:moodState
+    })
+    console.log(`Document written with ${docRef.id}`)
+  } catch (error) {
+    console.error(`Error trying to save to database - ${error.message}`)
+  }
+}
+
+//Was removed once we added the real time snapshot feature 
+// async function fetchOnceAndRenderPostsFromDB() {
+//       const querySnapshot = await getDocs(collection(db, collectionName));
+//       clearAll(postsEl)
+//       querySnapshot.forEach((doc) => {
+//         renderPost(postsEl, doc.data())
+//       });
+// }
+
+function fetchInRealtimeAndRenderPostsFromDB(){
+  onSnapshot(collection(db, collectionName), (querySnapshot) => {
+    clearAll(postsEl)
+    querySnapshot.forEach((doc) => {
+      renderPost(postsEl, doc.data())
+    })
+  })
+}
 /* == Functions - UI Functions == */
+function renderPost(postsEl, postData) {
+  postsEl.innerHTML += `<div class="post">
+  <div class="header">
+      <h3>${displayDate(postData.createdAt)}</h3>
+      <img src="assets/emojis/${postData.mood}.png">
+  </div>
+  <p>
+      ${replaceNewlinesWithBrTags(postData.body)}
+  </p>
+</div>`
+}
+
+function replaceNewlinesWithBrTags(inputString) {
+  return inputString.replace(/\n/g, "<br>")
+}
+
+function postButtonPressed() {
+  const postBody = textareaEl.value
+  const user = auth.currentUser
+  
+  if (postBody && moodState) {
+      addPostToDB(postBody, user)
+      clearInputField(textareaEl)
+      resetAllMoodElements(moodEmojiEls)
+  }
+}
+
+function clearAll(element) {
+  element.innerHTML = ""
+}
 
 function showLoggedOutView() {
     hideView(viewLoggedIn)
@@ -205,7 +307,63 @@ function showUserGreeting(element, user) {
       element.textContent = `Hey ${userFirstName}, how are you?`
   } else {
       element.textContent = `Hey friend, how are you?`
+  }    
+}
+
+function displayDate(firebaseDate) {
+  if (!firebaseDate) {
+    return "Date processing..." 
   }
 
-      
+  const date = firebaseDate.toDate()
+  
+  const day = date.getDate()
+  const year = date.getFullYear()
+  
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  const month = monthNames[date.getMonth()]
+
+  let hours = date.getHours()
+  let minutes = date.getMinutes()
+  hours = hours < 10 ? "0" + hours : hours
+  minutes = minutes < 10 ? "0" + minutes : minutes
+
+  return `${day} ${month} ${year} - ${hours}:${minutes}`
+}
+
+/* = Functions - UI Functions - Mood = */
+
+function selectMood(event) {
+  const selectedMoodEmojiElementId = event.currentTarget.id
+  
+  changeMoodsStyleAfterSelection(selectedMoodEmojiElementId, moodEmojiEls)
+  
+  const chosenMoodValue = returnMoodValueFromElementId(selectedMoodEmojiElementId)
+  
+  moodState = chosenMoodValue
+}
+
+function changeMoodsStyleAfterSelection(selectedMoodElementId, allMoodElements) {
+  for (let moodEmojiEl of moodEmojiEls) {
+      if (selectedMoodElementId === moodEmojiEl.id) {
+          moodEmojiEl.classList.remove("unselected-emoji")          
+          moodEmojiEl.classList.add("selected-emoji")
+      } else {
+          moodEmojiEl.classList.remove("selected-emoji")
+          moodEmojiEl.classList.add("unselected-emoji")
+      }
+  }
+}
+
+function resetAllMoodElements(allMoodElements) {
+  for (let moodEmojiEl of allMoodElements) {
+      moodEmojiEl.classList.remove("selected-emoji")
+      moodEmojiEl.classList.remove("unselected-emoji")
+  }
+  
+  moodState = 0
+}
+
+function returnMoodValueFromElementId(elementId) {
+  return Number(elementId.slice(5))
 }
