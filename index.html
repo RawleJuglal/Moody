@@ -4,12 +4,10 @@
       <meta charset="UTF-8" />
       <link rel="icon" type="image/svg+xml" href="/vite.svg" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Moody</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&family=Calistoga&display=swap" rel="stylesheet">
-		<link rel="stylesheet" href="index.css">
+      <title>Moody</title>
+		  <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&family=Calistoga&display=swap" rel="stylesheet">
     </head>
 
     <body>
@@ -37,7 +35,20 @@
         
         <section id="logged-in-view">
             <div class="container">
-                <img src="assets/gifs/jerryandthebird.gif">
+              <nav>
+                <button id="sign-out-btn" class="icon-btn">
+                    <img src="assets/icons/icon-sign-out.svg" class="icon-img-btn">
+                </button>
+              </nav>
+              <div class="app-container">
+                <div class="user-section">
+                    <img id="user-profile-picture">
+                    <h2 id="user-greeting"></h2>
+                </div>
+                <input id="display-name-input" type="text" placeholder="Display Name">
+                <input id="photo-url-input" type="text" placeholder="Profile Photo URL">
+                <button id="update-profile-btn" class="primary-btn">Update profile</button>
+              </div>
             </div>
         </section>
       </div>        

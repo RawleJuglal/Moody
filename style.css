@@ -38,8 +38,12 @@ body {
 
 /* === Typography === */
 
-h1 {
+h1, h2 {
   margin: 0;
+}
+
+h2 {
+  font-weight: 500;
 }
 
 .app-title {
@@ -60,6 +64,35 @@ section {
   gap: 1em;
 }
 
+/* === User Section === */
+
+.user-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8em;
+}
+
+.user-section img {
+  width: 3.75em;
+  height: 3.75em;
+  border-radius: 100%;
+  border: var(--border-width) solid var(--dark-color);
+}
+
+.user-section h2 {
+  font-size: 1.2em;
+}
+
+/* === Nav === */
+
+nav {
+  margin: 0.6em 0;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* === Structure === */
 
 .container {
@@ -72,6 +105,12 @@ section {
 
 #logged-out-view .container {
   gap: 2em;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
 }
 
 /* === Common for elements === */
@@ -162,6 +201,18 @@ button:hover {
   width: 1.375em;
 }
 
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 1.875em;
+}
+
+.icon-img-btn:hover {
+  filter: invert(0.5);
+}
+
 /* === IDs === */
 
 #logged-out-view {
@@ -170,4 +221,5 @@ button:hover {
 
 #logged-in-view {
   display: none;
+  margin: 0;
 }
