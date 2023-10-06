@@ -17,7 +17,10 @@ import {  getFirestore,
           serverTimestamp,
           getDocs,
           onSnapshot,
-          QuerySnapshot
+          QuerySnapshot,
+          query, 
+          where,
+          orderBy,
 } from "firebase/firestore";
 /* === Firebase Setup === */
 const firebaseConfig = {
@@ -108,7 +111,7 @@ onAuthStateChanged(auth, (user) => {
     } else {
       hideView(updateContainerEl)
     }
-    fetchInRealtimeAndRenderPostsFromDB()
+    fetchInRealtimeAndRenderPostsFromDB(user)
   } else {
     showLoggedOutView()
   }
@@ -226,14 +229,18 @@ async function addPostToDB(postBody, user){
 //       });
 // }
 
-function fetchInRealtimeAndRenderPostsFromDB(){
-  onSnapshot(collection(db, collectionName), (querySnapshot) => {
+function fetchInRealtimeAndRenderPostsFromDB(user){
+  const postsRef = collection(db, collectionName)
+  const q = query(postsRef, where("uid", '==', user.uid ), orderBy("createdAt", "desc"))
+
+  onSnapshot(q, (querySnapshot) => {
     clearAll(postsEl)
     querySnapshot.forEach((doc) => {
       renderPost(postsEl, doc.data())
     })
   })
 }
+
 /* == Functions - UI Functions == */
 function renderPost(postsEl, postData) {
   postsEl.innerHTML += `<div class="post">
