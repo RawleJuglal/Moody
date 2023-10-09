@@ -2,9 +2,12 @@
 <html lang="en">
     <head>
       <meta charset="UTF-8" />
-      <link rel="icon" type="image/svg+xml" href="/vite.svg" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>Moody</title>
+      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+      <link rel="manifest" href="/site.webmanifest">
 		  <link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&family=Calistoga&display=swap" rel="stylesheet">
@@ -74,7 +77,7 @@
                       <img src="assets/emojis/5.png">
                       Amazing
                   </button>
-              </div>
+                </div>
                 
                 <div class="post-section">
                   <textarea id="post-input" placeholder="Write down how you're feeling..."></textarea>
@@ -82,9 +85,16 @@
                   <!-- <button id="fetch-posts-btn" class="secondary-btn">Fetch posts</button> -->
                 </div>
 
-                <div id="posts" class="posts-section">
-                </div>
-                
+                <div class="filters-and-posts-section">
+                  <div class="filters-section">
+                      <button id="today-filter-btn" class="filter-btn">Today</button>
+                      <button id="week-filter-btn" class="filter-btn">Week</button>
+                      <button id="month-filter-btn" class="filter-btn">Month</button>
+                      <button id="all-filter-btn" class="filter-btn">All</button>
+                  </div>
+                  <div id="posts" class="posts-section">
+                  </div>
+                </div>        
               </div>
             </div>
         </section>
